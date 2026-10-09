@@ -405,7 +405,11 @@ async function syncEbay(costBySku) {
 // ---------------------------------------------------------------- main
 
 async function main() {
-  if (!PASSWORD) throw new Error('DASHBOARD_PASSWORD secret is missing. Add it in Settings > Secrets and variables > Actions.');
+  if (!PASSWORD) {
+    // Not set up yet: publish the page without data so it shows sample numbers.
+    console.log('DASHBOARD_PASSWORD secret is not set yet, so no store data was fetched. The dashboard will show sample data. See SETUP.md.');
+    return;
+  }
 
   const sources = {};
   let shopify = { orders: [], costBySku: {} };
