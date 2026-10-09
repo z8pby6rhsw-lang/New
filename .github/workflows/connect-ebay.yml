@@ -1,0 +1,32 @@
+# One-time setup: links the dashboard to your eBay seller account.
+# Run it once with the box empty to get the eBay sign-in link,
+# then again with the address eBay showed you after you clicked Agree.
+name: Connect eBay
+
+on:
+  workflow_dispatch:
+    inputs:
+      ebay_address:
+        description: "Leave empty the first time. Second time: paste the address of the page eBay showed after you clicked Agree."
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  connect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Connect eBay
+        env:
+          EBAY_CLIENT_ID: ${{ secrets.EBAY_CLIENT_ID }}
+          EBAY_CLIENT_SECRET: ${{ secrets.EBAY_CLIENT_SECRET }}
+          EBAY_RUNAME: ${{ secrets.EBAY_RUNAME }}
+          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+          EBAY_RETURN_ADDRESS: ${{ inputs.ebay_address }}
+        run: node scripts/connect-ebay.mjs

@@ -1,0 +1,1005 @@
+<title>Shopify &amp; eBay Sales</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Instrument+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: one dense control-room screen. Filter row, KPI strip, then a 12-column grid of panels. */
+:root {
+  --page: #f4f4f1;
+  --panel: #fcfcfb;
+  --ink: #0b0b0b;
+  --ink-2: #52514e;
+  --muted: #7d7b75;
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --line: rgba(11, 11, 11, 0.10);
+  --wash: rgba(11, 11, 11, 0.045);
+  --control: #0f2b3d;
+  --control-ink: #ffffff;
+  --shopify: #2a78d6;
+  --ebay: #eb6834;
+  --good: #006300;
+  --bad: #b42323;
+  --warn-bg: #fff1cc;
+  --warn-ink: #6b4a00;
+  --serious-bg: #fde3d8;
+  --serious-ink: #8a2f0c;
+  --crit-bg: #fadcdc;
+  --crit-ink: #8f1d1d;
+  --ok-bg: #dcf2dc;
+  --ok-ink: #0b520b;
+  --heat-0: #ecebe6;
+  --seq-1: #cde2fb;
+  --seq-2: #9ec5f4;
+  --seq-3: #6da7ec;
+  --seq-4: #3987e5;
+  --seq-5: #1c5cab;
+  --font-display: "Bricolage Grotesque", "Instrument Sans", system-ui, sans-serif;
+  --font-ui: "Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --page: #0d0d0d;
+    --panel: #1a1a19;
+    --ink: #ffffff;
+    --ink-2: #c3c2b7;
+    --muted: #8f8d86;
+    --grid: #2c2c2a;
+    --axis: #383835;
+    --line: rgba(255, 255, 255, 0.10);
+    --wash: rgba(255, 255, 255, 0.06);
+    --control: #d9ecf7;
+    --control-ink: #0b1a24;
+    --shopify: #3987e5;
+    --ebay: #d95926;
+    --good: #2fbf2f;
+    --bad: #ff7a7a;
+    --warn-bg: #3d3010;
+    --warn-ink: #fad27a;
+    --serious-bg: #3f2216;
+    --serious-ink: #f5a888;
+    --crit-bg: #421c1c;
+    --crit-ink: #ff9a9a;
+    --ok-bg: #173117;
+    --ok-ink: #8fdc8f;
+    --heat-0: #262624;
+    --seq-1: #104281;
+    --seq-2: #1c5cab;
+    --seq-3: #2a78d6;
+    --seq-4: #5598e7;
+    --seq-5: #9ec5f4;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --page: #0d0d0d;
+  --panel: #1a1a19;
+  --ink: #ffffff;
+  --ink-2: #c3c2b7;
+  --muted: #8f8d86;
+  --grid: #2c2c2a;
+  --axis: #383835;
+  --line: rgba(255, 255, 255, 0.10);
+  --wash: rgba(255, 255, 255, 0.06);
+  --control: #d9ecf7;
+  --control-ink: #0b1a24;
+  --shopify: #3987e5;
+  --ebay: #d95926;
+  --good: #2fbf2f;
+  --bad: #ff7a7a;
+  --warn-bg: #3d3010;
+  --warn-ink: #fad27a;
+  --serious-bg: #3f2216;
+  --serious-ink: #f5a888;
+  --crit-bg: #421c1c;
+  --crit-ink: #ff9a9a;
+  --ok-bg: #173117;
+  --ok-ink: #8fdc8f;
+  --heat-0: #262624;
+  --seq-1: #104281;
+  --seq-2: #1c5cab;
+  --seq-3: #2a78d6;
+  --seq-4: #5598e7;
+  --seq-5: #9ec5f4;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html, body { background: var(--page); color: var(--ink); }
+body { font: 14px/1.4 var(--font-ui); margin: 0; }
+.wrap { padding-inline: 16px; padding-block: 14px 28px; max-width: 1680px; margin: 0 auto; display: grid; gap: 12px; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--shopify); outline-offset: 2px; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* Header + filters */
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+.brand { display: flex; align-items: baseline; gap: 10px; margin-right: auto; min-width: 0; }
+.brand h1 { font: 700 22px/1.1 var(--font-display); letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+.brand .store { color: var(--muted); font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.seg { display: inline-flex; background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 2px; flex-wrap: wrap; }
+.seg button { border: 0; background: transparent; padding: 5px 10px; border-radius: 6px; cursor: pointer; color: var(--ink-2); white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
+.seg button:hover { background: var(--wash); }
+.seg button[aria-pressed="true"] { background: var(--control); color: var(--control-ink); font-weight: 600; }
+.dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
+.dot.s { background: var(--shopify); }
+.dot.e { background: var(--ebay); }
+.sync { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--ink-2); }
+.sync button { border: 1px solid var(--line); background: var(--panel); border-radius: 8px; padding: 5px 10px; cursor: pointer; }
+.sync button:hover { background: var(--wash); }
+
+.banner { border-radius: var(--r); padding: 10px 14px; background: var(--warn-bg); color: var(--warn-ink); display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.banner strong { font-weight: 600; }
+
+/* KPI strip */
+.kpis { display: grid; grid-template-columns: repeat(10, minmax(0, 1fr)); gap: 12px; }
+.tile { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px 10px; display: grid; gap: 4px; min-width: 0; align-content: start; }
+.tile .label { font-size: 12px; color: var(--ink-2); display: flex; justify-content: space-between; gap: 6px; }
+.tile .value { font: 600 24px/1.15 var(--font-ui); letter-spacing: -0.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tile.hero { grid-column: span 2; }
+.tile.hero .value { font: 700 40px/1.05 var(--font-display); letter-spacing: -0.02em; }
+.tile .delta { font-size: 12px; color: var(--muted); }
+.delta .up { color: var(--good); font-weight: 600; }
+.delta .down { color: var(--bad); font-weight: 600; }
+.tile .pill { white-space: normal; }
+.tile svg.spark { width: 100%; height: 28px; display: block; }
+.split { display: flex; height: 8px; gap: 2px; margin-top: 4px; }
+.split span { border-radius: 2px; min-width: 2px; }
+.split-legend { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; color: var(--ink-2); flex-wrap: wrap; }
+.split-legend span { display: inline-flex; gap: 6px; align-items: center; }
+
+/* Panels */
+.grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 12px; }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 12px 14px; min-width: 0; display: grid; gap: 10px; align-content: start; }
+.panel h2 { font: 600 14px/1.2 var(--font-ui); margin: 0; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.panel h2 small { font-weight: 400; color: var(--muted); font-size: 12px; }
+.c8 { grid-column: span 8; } .c6 { grid-column: span 6; } .c5 { grid-column: span 5; } .c4 { grid-column: span 4; } .c3 { grid-column: span 3; }
+.legend { display: flex; gap: 14px; font-size: 12px; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.chart { position: relative; min-height: 220px; }
+.chart svg { display: block; width: 100%; }
+.axis-text { fill: var(--muted); font-size: 11px; font-variant-numeric: tabular-nums; }
+details.tableview summary { cursor: pointer; color: var(--ink-2); font-size: 12px; }
+.scroll { overflow-x: auto; max-height: 260px; overflow-y: auto; }
+
+table { border-collapse: collapse; width: 100%; font-size: 13px; }
+th { text-align: left; font-weight: 500; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.04em; padding: 4px 6px; border-bottom: 1px solid var(--grid); position: sticky; top: 0; background: var(--panel); }
+td { padding: 6px 6px; border-bottom: 1px solid var(--grid); vertical-align: middle; }
+tr:last-child td { border-bottom: 0; }
+td.r, th.r { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+td.name { max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-cell { width: 28%; }
+.hbar { height: 8px; border-radius: 0 4px 4px 0; background: var(--shopify); display: flex; gap: 2px; background: none; }
+.hbar span { height: 8px; }
+.hbar span:last-child { border-radius: 0 4px 4px 0; }
+
+.pill { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
+.pill.ok { background: var(--ok-bg); color: var(--ok-ink); }
+.pill.warn { background: var(--warn-bg); color: var(--warn-ink); }
+.pill.serious { background: var(--serious-bg); color: var(--serious-ink); }
+.pill.crit { background: var(--crit-bg); color: var(--crit-ink); }
+.pill.neutral { background: var(--wash); color: var(--ink-2); }
+.chan { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); font-size: 12px; white-space: nowrap; }
+
+.list { display: grid; gap: 0; }
+.row { display: grid; grid-template-columns: 4px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--grid); }
+.row:last-child { border-bottom: 0; }
+.row .stripe { align-self: stretch; border-radius: 2px; background: transparent; }
+.row .stripe.late { background: var(--bad); }
+.row .stripe.soon { background: #fab219; }
+.row .main { min-width: 0; display: grid; gap: 1px; }
+.row .main b { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .main span { font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .end { text-align: right; display: grid; gap: 2px; justify-items: end; }
+.empty { color: var(--muted); font-size: 13px; padding: 8px 0; }
+
+.stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 14px; }
+.stat .k { font-size: 12px; color: var(--ink-2); }
+.stat .v { font-weight: 600; font-size: 18px; font-variant-numeric: tabular-nums; }
+.sub { font-size: 12px; color: var(--muted); margin: 0; }
+.subhead { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin: 4px 0 0; font-weight: 500; }
+
+.compare { display: grid; grid-template-columns: auto 1fr 1fr; gap: 0; font-size: 13px; }
+.compare > div { padding: 6px 4px; border-bottom: 1px solid var(--grid); font-variant-numeric: tabular-nums; }
+.compare > div.h { color: var(--muted); font-size: 12px; }
+.compare > div.r { text-align: right; }
+.compare > div:nth-last-child(-n+3) { border-bottom: 0; }
+
+.sources { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 12px; color: var(--muted); }
+.sources span { display: inline-flex; gap: 6px; align-items: center; }
+
+#tip { position: fixed; pointer-events: none; z-index: 10; background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; font-size: 12px; box-shadow: 0 6px 24px rgba(0,0,0,0.14); min-width: 140px; display: grid; gap: 3px; }
+#tip .t { color: var(--muted); }
+#tip .line { display: flex; align-items: center; gap: 8px; justify-content: space-between; }
+#tip .line b { font-variant-numeric: tabular-nums; }
+#tip .key { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-2); }
+#tip .key i { width: 10px; height: 2px; display: inline-block; border-radius: 1px; }
+
+/* Lock screen */
+.lock { min-height: 80vh; display: grid; place-items: center; padding-inline: 16px; }
+.lock form { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 24px; width: min(380px, 100%); display: grid; gap: 12px; }
+.lock h1 { font: 700 24px/1.1 var(--font-display); margin: 0; }
+.lock p { margin: 0; color: var(--ink-2); }
+.lock input[type=password] { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--axis); background: var(--page); }
+.lock label.check { display: flex; gap: 8px; align-items: center; color: var(--ink-2); font-size: 13px; }
+.lock button { padding: 10px 12px; border-radius: 8px; border: 0; background: var(--control); color: var(--control-ink); font-weight: 600; cursor: pointer; }
+.lock .err { color: var(--bad); font-size: 13px; }
+.linkbtn { background: none; border: 0; padding: 0; color: var(--ink-2); text-decoration: underline; cursor: pointer; font-size: 13px; }
+
+.loading { opacity: 0.55; transition: opacity 0.2s; }
+
+@media (max-width: 1280px) {
+  .kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  .c8, .c6 { grid-column: span 12; }
+  .c4, .c5, .c3 { grid-column: span 6; }
+}
+@media (max-width: 760px) {
+  .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .tile.hero { grid-column: span 2; }
+  .c4, .c5, .c3 { grid-column: span 12; }
+  .tile.hero .value { font-size: 34px; }
+}
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+
+<div id="app"></div>
+<div id="tip" hidden></div>
+
+<script>
+'use strict';
+
+// ------------------------------------------------------------ helpers
+const $ = (s, el = document) => el.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const DAY = 86400000;
+const store = {
+  get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+  set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+  del(k) { try { localStorage.removeItem(k); } catch {} },
+};
+const startOfDay = (d) => { const x = new Date(d); x.setHours(0, 0, 0, 0); return x; };
+const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+const COUNTRY = (() => { try { return new Intl.DisplayNames(undefined, { type: 'region' }); } catch { return null; } })();
+const countryName = (c) => { try { return (COUNTRY && COUNTRY.of(c)) || c; } catch { return c; } };
+
+let fmtCache = {};
+function money(v, opts = {}) {
+  const cur = STATE.data?.currency || 'USD';
+  const abs = Math.abs(v);
+  const compact = opts.compact && abs >= 100000;
+  const digits = opts.cents ? 2 : (abs < 100 && !opts.whole ? 2 : 0);
+  const key = cur + compact + digits;
+  fmtCache[key] ||= new Intl.NumberFormat(undefined, { style: 'currency', currency: cur, notation: compact ? 'compact' : 'standard', maximumFractionDigits: compact ? 1 : digits, minimumFractionDigits: compact ? 0 : digits });
+  return fmtCache[key].format(v);
+}
+const int = (v) => new Intl.NumberFormat().format(Math.round(v));
+const pct = (v, d = 1) => (Number.isFinite(v) ? (v * 100).toFixed(d) + '%' : '–');
+function ago(date) {
+  const m = Math.round((Date.now() - date) / 60000);
+  if (m < 1) return 'just now';
+  if (m < 60) return `${m} min ago`;
+  const h = Math.round(m / 60);
+  if (h < 48) return `${h} hr ago`;
+  return `${Math.round(h / 24)} days ago`;
+}
+function ageText(ms) {
+  const h = ms / 3600000;
+  if (h < 1) return 'under 1 hr';
+  if (h < 24) return `${Math.floor(h)} hr`;
+  const d = Math.floor(h / 24);
+  return d === 1 ? '1 day' : `${d} days`;
+}
+function niceMax(v) {
+  if (v <= 0) return 1;
+  const p = Math.pow(10, Math.floor(Math.log10(v)));
+  const n = v / p;
+  const step = n <= 1 ? 1 : n <= 2 ? 2 : n <= 2.5 ? 2.5 : n <= 5 ? 5 : 10;
+  return step * p;
+}
+function shortMoney(v) {
+  const cur = STATE.data?.currency || 'USD';
+  return new Intl.NumberFormat(undefined, { style: 'currency', currency: cur, notation: 'compact', maximumFractionDigits: 1 }).format(v);
+}
+
+// ------------------------------------------------------------ data loading + decryption
+const STATE = { data: null, demo: false, password: null, period: store.get('period') || '30d', channel: store.get('channel') || 'all', etag: null };
+
+const b64 = (s) => Uint8Array.from(atob(s), (c) => c.charCodeAt(0));
+async function decrypt(box, password) {
+  const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(password), 'PBKDF2', false, ['deriveKey']);
+  const key = await crypto.subtle.deriveKey({ name: 'PBKDF2', salt: b64(box.salt), iterations: box.iterations, hash: 'SHA-256' }, base, { name: 'AES-GCM', length: 256 }, false, ['decrypt']);
+  const plain = await crypto.subtle.decrypt({ name: 'AES-GCM', iv: b64(box.iv) }, key, b64(box.data));
+  const stream = new Blob([plain]).stream().pipeThrough(new DecompressionStream('gzip'));
+  return JSON.parse(await new Response(stream).text());
+}
+
+async function fetchBox() {
+  const res = await fetch('data.enc.json?t=' + Date.now(), { cache: 'no-store' });
+  if (!res.ok) throw new Error('missing');
+  return res.json();
+}
+
+async function boot() {
+  let box;
+  try { box = await fetchBox(); } catch { return startDemo(); }
+  const saved = store.get('dash-pw');
+  if (saved) {
+    try { await unlock(box, saved); return; } catch { store.del('dash-pw'); }
+  }
+  showLock(box);
+}
+
+async function unlock(box, password) {
+  const data = await decrypt(box, password);
+  STATE.password = password;
+  STATE.data = prepare(data);
+  STATE.demo = false;
+  STATE.stamp = box.data.slice(0, 32);
+  render();
+}
+
+function showLock(box, error = '') {
+  $('#app').innerHTML = `
+  <div class="lock">
+    <form id="lockform" autocomplete="on">
+      <h1>Shopify &amp; eBay Sales</h1>
+      <p>Your sales data is locked. Enter your dashboard password to open it.</p>
+      <input type="text" name="username" value="dashboard" autocomplete="username" hidden>
+      <input id="pw" type="password" autocomplete="current-password" placeholder="Dashboard password" aria-label="Dashboard password" required>
+      <label class="check"><input id="remember" type="checkbox" checked> Remember on this device</label>
+      ${error ? `<div class="err" role="alert">${esc(error)}</div>` : ''}
+      <button type="submit" id="unlockbtn">Unlock dashboard</button>
+      <button type="button" class="linkbtn" id="demobtn">Look around with sample data instead</button>
+    </form>
+  </div>`;
+  $('#pw').focus();
+  $('#demobtn').onclick = startDemo;
+  $('#lockform').onsubmit = async (ev) => {
+    ev.preventDefault();
+    const pw = $('#pw').value;
+    $('#unlockbtn').textContent = 'Unlocking…';
+    try {
+      await unlock(box, pw);
+      if ($('#remember')?.checked !== false) store.set('dash-pw', pw);
+    } catch {
+      showLock(box, "That password didn't work. It's the DASHBOARD_PASSWORD you saved in GitHub.");
+    }
+  };
+}
+
+function startDemo() {
+  STATE.demo = true;
+  STATE.data = prepare(makeDemo());
+  render();
+}
+
+// Re-check for fresh data every 10 minutes while the page is open.
+setInterval(async () => {
+  if (STATE.demo || !STATE.password) return;
+  try {
+    const box = await fetchBox();
+    if (box.data.slice(0, 32) === STATE.stamp) return;
+    $('#app').classList.add('loading');
+    await unlock(box, STATE.password);
+  } catch {} finally { $('#app').classList.remove('loading'); }
+}, 10 * 60000);
+setInterval(() => { const el = $('#syncago'); if (el && STATE.data) el.textContent = ago(STATE.data.generated); }, 60000);
+
+function prepare(data) {
+  for (const o of data.orders) {
+    o.d = new Date(o.t);
+    o.ms = o.d.getTime();
+    o.live = o.status !== 'cancelled';
+    o.net = o.live ? o.sales - o.refund : 0;
+    o.units = o.items.reduce((s, i) => s + (i.qty || 0), 0);
+  }
+  data.generated = new Date(data.generatedAt);
+  return data;
+}
+
+// ------------------------------------------------------------ periods
+const PERIODS = [
+  ['today', 'Today'], ['7d', '7 days'], ['30d', '30 days'], ['90d', '90 days'],
+  ['mtd', 'This month'], ['ytd', 'This year'], ['12m', '12 months'],
+];
+function range(key) {
+  const now = new Date();
+  const today = startOfDay(now);
+  const end = addDays(today, 1);
+  let start;
+  if (key === 'today') start = today;
+  else if (key === '7d') start = addDays(today, -6);
+  else if (key === '30d') start = addDays(today, -29);
+  else if (key === '90d') start = addDays(today, -89);
+  else if (key === 'mtd') start = new Date(today.getFullYear(), today.getMonth(), 1);
+  else if (key === 'ytd') start = new Date(today.getFullYear(), 0, 1);
+  else start = addDays(today, -364);
+  const len = end - start;
+  let prevStart, prevEnd;
+  if (key === 'mtd') { prevStart = new Date(today.getFullYear(), today.getMonth() - 1, 1); prevEnd = new Date(prevStart.getTime() + (now - start)); }
+  else if (key === 'ytd') { prevStart = new Date(today.getFullYear() - 1, 0, 1); prevEnd = new Date(prevStart.getTime() + (now - start)); }
+  else if (key === 'today') { prevStart = addDays(today, -1); prevEnd = new Date(prevStart.getTime() + (now - start)); }
+  else { prevStart = new Date(start.getTime() - len); prevEnd = start; }
+  const prevLabel = { today: 'yesterday so far', '7d': 'previous 7 days', '30d': 'previous 30 days', '90d': 'previous 90 days', mtd: 'last month so far', ytd: 'last year so far', '12m': 'previous 12 months' }[key];
+  return { start, end, prevStart, prevEnd, prevLabel };
+}
+
+function inChannel(o) { return STATE.channel === 'all' || o.ch === STATE.channel; }
+function slice(from, to) { return STATE.data.orders.filter((o) => o.ms >= from && o.ms < to && inChannel(o)); }
+
+function metrics(list) {
+  const live = list.filter((o) => o.live);
+  const m = { orders: live.length, sales: 0, fees: 0, refunds: 0, units: 0, cost: 0, costedSales: 0, itemSales: 0, tax: 0, ship: 0 };
+  for (const o of live) {
+    m.sales += o.net; m.fees += o.fee; m.refunds += o.refund; m.units += o.units; m.tax += o.tax; m.ship += o.ship;
+    for (const i of o.items) { m.itemSales += i.amt || 0; if (i.cost != null) { m.cost += i.cost; m.costedSales += i.amt || 0; } }
+  }
+  m.aov = m.orders ? m.sales / m.orders : 0;
+  m.coverage = m.itemSales ? m.costedSales / m.itemSales : 0;
+  m.profit = m.sales - m.fees - m.cost;
+  m.margin = m.sales ? m.profit / m.sales : NaN;
+  m.refundRate = m.sales + m.refunds ? m.refunds / (m.sales + m.refunds) : 0;
+  return m;
+}
+
+// ------------------------------------------------------------ rendering
+function render() {
+  const d = STATE.data;
+  const r = range(STATE.period);
+  const cur = slice(r.start.getTime(), r.end.getTime());
+  const prev = slice(r.prevStart.getTime(), r.prevEnd.getTime());
+  const m = metrics(cur);
+  const p = metrics(prev);
+  const coverageEnd = new Date(d.since || 0);
+  const prevCovered = !d.since || r.prevStart >= coverageEnd;
+
+  const s = d.sources || {};
+  const storeName = s.shopify?.name || 'Your store';
+  const bannerMsgs = [];
+  if (STATE.demo) bannerMsgs.push(`<strong>Sample data.</strong> These are made-up numbers so you can see how the dashboard works. Your real sales appear here once setup is finished.`);
+  for (const [k, label] of [['shopify', 'Shopify'], ['ebay', 'eBay']]) {
+    if (s[k] && !s[k].ok) bannerMsgs.push(`<strong>${label} didn't sync.</strong> ${esc(s[k].message)}`);
+  }
+  if (!STATE.demo && Date.now() - d.generated > 3 * 3600000) bannerMsgs.push(`<strong>Data is ${esc(ago(d.generated))} old.</strong> The hourly sync may have stopped. Check the Actions tab in GitHub.`);
+
+  $('#app').innerHTML = `
+  <div class="wrap">
+    <header class="top">
+      <div class="brand"><h1>Shopify &amp; eBay Sales</h1><span class="store">${esc(storeName)}</span></div>
+      <div class="seg" role="group" aria-label="Time period">${PERIODS.map(([k, l]) => `<button type="button" data-period="${k}" aria-pressed="${STATE.period === k}">${l}</button>`).join('')}</div>
+      <div class="seg" role="group" aria-label="Channel">
+        <button type="button" data-ch="all" aria-pressed="${STATE.channel === 'all'}">Both</button>
+        <button type="button" data-ch="s" aria-pressed="${STATE.channel === 's'}"><span class="dot s"></span>Shopify</button>
+        <button type="button" data-ch="e" aria-pressed="${STATE.channel === 'e'}"><span class="dot e"></span>eBay</button>
+      </div>
+      <div class="sync">
+        <span>${STATE.demo ? 'Sample data' : `Synced <span id="syncago">${esc(ago(d.generated))}</span>`}</span>
+        ${STATE.demo ? '' : '<button type="button" id="lockbtn" title="Forget the password on this device">Lock</button>'}
+      </div>
+    </header>
+    ${bannerMsgs.map((b) => `<div class="banner" role="status">${b}</div>`).join('')}
+    <section class="kpis" aria-label="Key numbers">${kpiTiles(m, p, r, cur, prevCovered)}</section>
+    <section class="grid">
+      <div class="panel c8">
+        <h2><span>Sales over time</span><small id="bucketlabel"></small></h2>
+        <div class="legend">${legend()}</div>
+        <div class="chart" id="saleschart"></div>
+        <details class="tableview"><summary>Show as table</summary><div class="scroll" id="salestable"></div></details>
+      </div>
+      <div class="panel c4">
+        <h2><span>Shopify vs eBay</span><small>${esc(periodLabel())}</small></h2>
+        ${channelCompare(r)}
+      </div>
+      <div class="panel c5">
+        <h2><span>Top products</span><small>by sales</small></h2>
+        ${topProducts(cur)}
+      </div>
+      <div class="panel c4">
+        <h2><span>Orders to ship</span><small>oldest first</small></h2>
+        ${toShip()}
+      </div>
+      <div class="panel c3">
+        <h2><span>Latest orders</span></h2>
+        ${recentOrders(cur)}
+      </div>
+      <div class="panel c6">
+        <h2><span>When orders come in</span><small>orders by day and hour</small></h2>
+        <div class="chart" id="heatmap" style="min-height:0"></div>
+      </div>
+      <div class="panel c3">
+        <h2><span>Where buyers are</span><small>by sales</small></h2>
+        ${countries(cur)}
+      </div>
+      <div class="panel c3">
+        <h2><span>Stock &amp; payouts</span></h2>
+        ${health()}
+      </div>
+    </section>
+    <footer class="sources">${sourcesLine()}</footer>
+  </div>`;
+
+  document.querySelectorAll('[data-period]').forEach((b) => (b.onclick = () => { STATE.period = b.dataset.period; store.set('period', STATE.period); render(); }));
+  document.querySelectorAll('[data-ch]').forEach((b) => (b.onclick = () => { STATE.channel = b.dataset.ch; store.set('channel', STATE.channel); render(); }));
+  const lockbtn = $('#lockbtn');
+  if (lockbtn) lockbtn.onclick = () => { store.del('dash-pw'); location.reload(); };
+
+  drawSales(cur, r);
+  drawHeatmap(cur);
+}
+
+function periodLabel() { return PERIODS.find(([k]) => k === STATE.period)[1]; }
+function legend() {
+  const items = [];
+  if (STATE.channel !== 'e') items.push('<span><i style="background:var(--shopify)"></i>Shopify</span>');
+  if (STATE.channel !== 's') items.push('<span><i style="background:var(--ebay)"></i>eBay</span>');
+  return items.length > 1 ? items.join('') : '';
+}
+
+function deltaHtml(cur, prev, { upIsGood = true, covered = true, label } = {}) {
+  if (!covered) return `<span>no earlier data to compare</span>`;
+  if (!prev) return cur ? `<span>new vs ${esc(label)}</span>` : `<span>vs ${esc(label)}</span>`;
+  const ch = (cur - prev) / Math.abs(prev);
+  const good = ch >= 0 ? upIsGood : !upIsGood;
+  const arrow = ch >= 0 ? '▲' : '▼';
+  return `<span class="${good ? 'up' : 'down'}">${arrow} ${pct(Math.abs(ch))}</span> vs ${esc(label)}`;
+}
+
+function dailySeries(list, r, key) {
+  const days = Math.max(1, Math.round((r.end - r.start) / DAY));
+  const hourly = days <= 1;
+  const n = hourly ? 24 : days;
+  const arr = new Array(n).fill(0);
+  for (const o of list) {
+    if (!o.live) continue;
+    const i = hourly ? o.d.getHours() : Math.floor((startOfDay(o.d) - r.start) / DAY);
+    if (i >= 0 && i < n) arr[i] += key(o);
+  }
+  if (!hourly) {
+    const todayIdx = Math.floor((startOfDay(new Date()) - r.start) / DAY);
+    return arr.slice(0, todayIdx + 1);
+  }
+  return arr.slice(0, new Date().getHours() + 1);
+}
+
+function spark(values, color = 'var(--ink-2)') {
+  if (values.length < 2) return '<svg class="spark" aria-hidden="true"></svg>';
+  const w = 200, h = 28, pad = 4;
+  const max = Math.max(...values, 1);
+  const pts = values.map((v, i) => [pad + (i / (values.length - 1)) * (w - pad * 2), h - pad - (v / max) * (h - pad * 2)]);
+  const line = pts.map((p) => p.map((n) => n.toFixed(1)).join(',')).join(' ');
+  const last = pts[pts.length - 1];
+  return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true">
+    <polygon points="${pad},${h - pad} ${line} ${last[0].toFixed(1)},${h - pad}" fill="${color}" opacity="0.10"/>
+    <polyline points="${line}" fill="none" stroke="${color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+  </svg>`;
+}
+
+function kpiTiles(m, p, r, cur, covered) {
+  const lbl = r.prevLabel;
+  const sS = cur.filter((o) => o.ch === 's' && o.live).reduce((a, o) => a + o.net, 0);
+  const sE = cur.filter((o) => o.ch === 'e' && o.live).reduce((a, o) => a + o.net, 0);
+  const tot = sS + sE || 1;
+  const ship = shipQueue();
+  const late = ship.filter((o) => Date.now() - o.ms > 2 * DAY).length;
+  const costNote = m.coverage >= 0.995 ? 'after fees and item cost' : m.coverage > 0 ? `item cost known for ${pct(m.coverage, 0)} of sales` : 'add item costs in Shopify to see this';
+  const tiles = [
+    `<div class="tile hero">
+      <div class="label"><span>Sales</span><span>${esc(periodLabel())}</span></div>
+      <div class="value" title="${esc(money(m.sales, { cents: true }))}">${money(m.sales, { compact: true, whole: true })}</div>
+      <div class="delta">${deltaHtml(m.sales, p.sales, { covered, label: lbl })}</div>
+      ${STATE.channel === 'all' ? `<div class="split" aria-hidden="true"><span style="flex:${sS / tot};background:var(--shopify)"></span><span style="flex:${sE / tot};background:var(--ebay)"></span></div>
+      <div class="split-legend"><span><i class="dot s"></i>Shopify ${money(sS, { compact: true, whole: true })} · ${pct(sS / tot, 0)}</span><span><i class="dot e"></i>eBay ${money(sE, { compact: true, whole: true })} · ${pct(sE / tot, 0)}</span></div>` : spark(dailySeries(cur, r, (o) => o.net))}
+    </div>`,
+    tile('Orders', int(m.orders), deltaHtml(m.orders, p.orders, { covered, label: lbl }), spark(dailySeries(cur, r, () => 1))),
+    tile('Average order', money(m.aov, { cents: true }), deltaHtml(m.aov, p.aov, { covered, label: lbl }), spark(dailySeries(cur, r, (o) => o.net))),
+    tile('Items sold', int(m.units), deltaHtml(m.units, p.units, { covered, label: lbl }), spark(dailySeries(cur, r, (o) => o.units))),
+    tile('Profit (est.)', m.coverage > 0 ? money(m.profit, { compact: true, whole: true }) : '–', m.coverage > 0 ? `${Number.isFinite(m.margin) ? pct(m.margin, 0) + ' margin · ' : ''}${esc(costNote)}` : esc(costNote), m.coverage > 0 ? deltaLine(m.profit, p.profit, covered, lbl) : ''),
+    tile('eBay fees', money(m.fees, { compact: true, whole: true }), m.sales ? `${pct(m.fees / Math.max(sE || m.sales, 1))} of eBay sales` : 'no eBay sales', deltaLine(m.fees, p.fees, covered, lbl, false)),
+    tile('Refunds', money(m.refunds, { compact: true, whole: true }), `${pct(m.refundRate)} of sales refunded`, deltaLine(m.refunds, p.refunds, covered, lbl, false)),
+    tile('Shipping charged', money(m.ship, { compact: true, whole: true }), m.sales ? `${pct(m.ship / m.sales)} of sales` : '', deltaLine(m.ship, p.ship, covered, lbl)),
+    tile('To ship now', int(ship.length), late ? `<span class="pill crit">⚠ ${late} waiting over 2 days</span>` : ship.length ? `<span class="pill ok">✓ all within 2 days</span>` : `<span class="pill ok">✓ nothing waiting</span>`, ''),
+  ];
+  return tiles.join('');
+}
+function deltaLine(c, p, covered, lbl, upIsGood = true) { return `<div class="delta">${deltaHtml(c, p, { covered, label: lbl, upIsGood })}</div>`; }
+function tile(label, value, delta, extra) {
+  return `<div class="tile"><div class="label"><span>${label}</span></div><div class="value">${value}</div><div class="delta">${delta}</div>${extra}</div>`;
+}
+
+function channelCompare(r) {
+  const all = STATE.data.orders.filter((o) => o.ms >= r.start && o.ms < r.end);
+  const ms = metrics(all.filter((o) => o.ch === 's'));
+  const me = metrics(all.filter((o) => o.ch === 'e'));
+  const tot = ms.sales + me.sales || 1;
+  const rows = [
+    ['Sales', money(ms.sales, { compact: true, whole: true }), money(me.sales, { compact: true, whole: true })],
+    ['Share of sales', pct(ms.sales / tot, 0), pct(me.sales / tot, 0)],
+    ['Orders', int(ms.orders), int(me.orders)],
+    ['Average order', money(ms.aov, { cents: true }), money(me.aov, { cents: true })],
+    ['Items sold', int(ms.units), int(me.units)],
+    ['Shipping charged', money(ms.ship, { compact: true }), money(me.ship, { compact: true })],
+    ['Fees', ms.fees ? money(ms.fees, { compact: true }) : '<span title="Shopify payment fees aren\'t included">n/a</span>', money(me.fees, { compact: true })],
+    ['Refund rate', pct(ms.refundRate), pct(me.refundRate)],
+    ['Profit (est.)', ms.coverage ? money(ms.profit, { compact: true, whole: true }) : '–', me.coverage ? money(me.profit, { compact: true, whole: true }) : '–'],
+  ];
+  return `
+    <div class="split" aria-hidden="true" style="height:10px"><span style="flex:${ms.sales / tot};background:var(--shopify)"></span><span style="flex:${me.sales / tot};background:var(--ebay)"></span></div>
+    <div class="compare">
+      <div class="h"></div><div class="h r"><span class="chan" style="justify-content:flex-end"><i class="dot s"></i>Shopify</span></div><div class="h r"><span class="chan" style="justify-content:flex-end"><i class="dot e"></i>eBay</span></div>
+      ${rows.map(([k, a, b]) => `<div>${k}</div><div class="r">${a}</div><div class="r">${b}</div>`).join('')}
+    </div>
+    ${STATE.channel !== 'all' ? '<p class="sub">Shows both stores, whichever store is picked above.</p>' : ''}`;
+}
+
+function topProducts(list) {
+  const map = new Map();
+  for (const o of list) {
+    if (!o.live) continue;
+    for (const i of o.items) {
+      const k = (i.title || '').trim().toLowerCase();
+      if (!k) continue;
+      const e = map.get(k) || { title: i.title, s: 0, e: 0, units: 0 };
+      e[o.ch] += i.amt || 0;
+      e.units += i.qty || 0;
+      map.set(k, e);
+    }
+  }
+  const rows = [...map.values()].map((e) => ({ ...e, total: e.s + e.e })).sort((a, b) => b.total - a.total).slice(0, 10);
+  if (!rows.length) return '<p class="empty">No sales in this period.</p>';
+  const max = rows[0].total || 1;
+  return `<table>
+    <thead><tr><th>Product</th><th class="r">Sold</th><th class="r">Sales</th><th class="bar-cell" aria-hidden="true"></th></tr></thead>
+    <tbody>${rows.map((r) => `<tr>
+      <td class="name" title="${esc(r.title)}">${esc(r.title)}</td>
+      <td class="r">${int(r.units)}</td>
+      <td class="r">${money(r.total, { whole: true })}</td>
+      <td class="bar-cell"><div class="hbar" title="Shopify ${esc(money(r.s, { whole: true }))} · eBay ${esc(money(r.e, { whole: true }))}">
+        ${r.s ? `<span style="width:${(r.s / max) * 100}%;background:var(--shopify)"></span>` : ''}${r.e ? `<span style="width:${(r.e / max) * 100}%;background:var(--ebay)"></span>` : ''}
+      </div></td></tr>`).join('')}</tbody></table>`;
+}
+
+function shipQueue() {
+  return STATE.data.orders
+    .filter((o) => inChannel(o) && o.live && o.status !== 'refunded' && o.ful !== 'fulfilled' && Date.now() - o.ms < 60 * DAY)
+    .sort((a, b) => a.ms - b.ms);
+}
+
+function chanTag(o) { return `<span class="chan"><i class="dot ${o.ch}"></i>${o.ch === 's' ? 'Shopify' : 'eBay'}</span>`; }
+
+function toShip() {
+  const q = shipQueue();
+  if (!q.length) return '<p class="empty">Everything has shipped. Nice.</p>';
+  const show = q.slice(0, 7);
+  return `<div class="list">${show.map((o) => {
+    const age = Date.now() - o.ms;
+    const cls = age > 2 * DAY ? 'late' : age > DAY ? 'soon' : '';
+    const first = o.items[0]?.title || 'Order';
+    const more = o.items.length > 1 ? ` + ${o.items.length - 1} more` : '';
+    return `<div class="row"><span class="stripe ${cls}"></span>
+      <div class="main"><b title="${esc(first + more)}">${esc(first)}${esc(more)}</b><span>${esc(o.id)} · ${chanTag(o)}${o.ful === 'partial' ? ' · part shipped' : ''}</span></div>
+      <div class="end"><span class="num">${money(o.sales, { cents: true })}</span>${cls === 'late' ? `<span class="pill crit">⚠ ${ageText(age)}</span>` : cls === 'soon' ? `<span class="pill warn">${ageText(age)}</span>` : `<span class="pill neutral">${ageText(age)}</span>`}</div>
+    </div>`;
+  }).join('')}</div>${q.length > show.length ? `<p class="sub">and ${q.length - show.length} more waiting</p>` : ''}`;
+}
+
+const STATUS = {
+  paid: ['Paid', 'ok'], pending: ['Pending', 'warn'], refunded: ['Refunded', 'serious'],
+  part_refunded: ['Part refund', 'serious'], cancelled: ['Cancelled', 'neutral'],
+};
+function recentOrders(list) {
+  const rows = list.slice().sort((a, b) => b.ms - a.ms).slice(0, 8);
+  if (!rows.length) return '<p class="empty">No orders in this period.</p>';
+  const fmt = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  return `<div class="list">${rows.map((o) => {
+    const [label, cls] = STATUS[o.status] || STATUS.paid;
+    return `<div class="row"><span class="stripe"></span>
+      <div class="main"><b>${esc(o.items[0]?.title || o.id)}</b><span>${esc(fmt.format(o.d))} · ${chanTag(o)}</span></div>
+      <div class="end"><span class="num">${money(o.sales, { cents: true })}</span><span class="pill ${cls}">${label}</span></div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function countries(list) {
+  const map = new Map();
+  let known = 0;
+  for (const o of list) {
+    if (!o.live || !o.country) continue;
+    known++;
+    const e = map.get(o.country) || { s: 0, e: 0, n: 0 };
+    e[o.ch] += o.net; e.n++;
+    map.set(o.country, e);
+  }
+  if (!known) return '<p class="empty">No location data yet. Shopify needs the "customer addresses" permission to share this (see the setup guide).</p>';
+  const rows = [...map.entries()].map(([c, e]) => ({ c, ...e, t: e.s + e.e })).sort((a, b) => b.t - a.t).slice(0, 8);
+  const max = rows[0].t || 1;
+  return `<table><tbody>${rows.map((r) => `<tr>
+    <td class="name">${esc(countryName(r.c))}</td>
+    <td class="r">${money(r.t, { compact: true, whole: true })}</td>
+    <td class="bar-cell" style="width:40%"><div class="hbar" title="${int(r.n)} orders">${r.s ? `<span style="width:${(r.s / max) * 100}%;background:var(--shopify)"></span>` : ''}${r.e ? `<span style="width:${(r.e / max) * 100}%;background:var(--ebay)"></span>` : ''}</div></td>
+  </tr>`).join('')}</tbody></table>`;
+}
+
+function health() {
+  const d = STATE.data;
+  const parts = [];
+  const f = d.ebay?.funds;
+  const l = d.ebay?.listings;
+  if (f || l) {
+    parts.push(`<p class="subhead"><span class="chan"><i class="dot e"></i>eBay</span></p><div class="stats">
+      ${f ? `<div class="stat"><div class="k">Ready to pay out</div><div class="v">${f.available != null ? money(f.available, { whole: true }) : '–'}</div></div>
+      <div class="stat"><div class="k">Processing</div><div class="v">${f.processing != null ? money(f.processing, { whole: true }) : '–'}</div></div>` : ''}
+      ${l ? `<div class="stat"><div class="k">Live listings</div><div class="v">${int(l.active)}</div></div>
+      <div class="stat"><div class="k">Last one left</div><div class="v">${int(l.lowQty?.length || 0)}</div></div>` : ''}
+    </div>`);
+    if (l?.mostWatched?.length) {
+      parts.push(`<p class="subhead">Most watched on eBay</p><div class="list">${l.mostWatched.slice(0, 3).map((i) => `<div class="row"><span class="stripe"></span><div class="main"><b title="${esc(i.title)}">${esc(i.title)}</b></div><div class="end"><span class="num">${int(i.watchers)} watching</span></div></div>`).join('')}</div>`);
+    }
+  }
+  const low = d.shopify?.lowStock || [];
+  parts.push(`<p class="subhead"><span class="chan"><i class="dot s"></i>Shopify low stock</span></p>`);
+  parts.push(low.length ? `<div class="list">${low.slice(0, 4).map((i) => `<div class="row"><span class="stripe ${i.qty <= 0 ? 'late' : 'soon'}"></span><div class="main"><b title="${esc(i.title)}">${esc(i.title)}</b></div><div class="end">${i.qty <= 0 ? '<span class="pill crit">Sold out</span>' : `<span class="pill warn">${int(i.qty)} left</span>`}</div></div>`).join('')}</div>${low.length > 4 ? `<p class="sub">and ${low.length - 4} more at 5 or fewer</p>` : ''}` : '<p class="empty">Nothing at 5 or fewer in stock.</p>');
+  return parts.join('');
+}
+
+function sourcesLine() {
+  const s = STATE.data.sources || {};
+  const out = [];
+  for (const [k, label] of [['shopify', 'Shopify'], ['ebay', 'eBay']]) {
+    const v = s[k];
+    if (!v) continue;
+    out.push(`<span><i class="dot ${k[0]}"></i>${label}: ${v.ok ? `${int(v.orders)} orders loaded` : 'not syncing'}</span>`);
+  }
+  const since = STATE.data.since ? new Date(STATE.data.since) : null;
+  if (since) out.push(`<span>History from ${esc(since.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }))}</span>`);
+  out.push('<span>Sales exclude tax and refunds, include shipping. Updates every hour.</span>');
+  return out.join('');
+}
+
+// ------------------------------------------------------------ charts
+const tip = $('#tip');
+function showTip(ev, html) {
+  tip.innerHTML = html;
+  tip.hidden = false;
+  const pad = 14;
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  let x = ev.clientX + pad, y = ev.clientY + pad;
+  if (x + w > innerWidth - 8) x = ev.clientX - w - pad;
+  if (y + h > innerHeight - 8) y = ev.clientY - h - pad;
+  tip.style.left = Math.max(8, x) + 'px';
+  tip.style.top = Math.max(8, y) + 'px';
+}
+function hideTip() { tip.hidden = true; }
+
+function roundTop(x, y, w, h, r) {
+  if (h <= 0) return '';
+  r = Math.min(r, h, w / 2);
+  return `M${x},${y + h}V${y + r}Q${x},${y} ${x + r},${y}H${x + w - r}Q${x + w},${y} ${x + w},${y + r}V${y + h}Z`;
+}
+
+function buckets(list, r) {
+  const days = Math.round((r.end - r.start) / DAY);
+  const out = [];
+  let mode;
+  if (days <= 1) {
+    mode = 'hour';
+    for (let h = 0; h < 24; h++) { const s = new Date(r.start); s.setHours(h); out.push({ start: s, end: new Date(s.getTime() + 3600000) }); }
+  } else if (days <= 92) {
+    mode = 'day';
+    for (let d = new Date(r.start); d < r.end; d = addDays(d, 1)) out.push({ start: d, end: addDays(d, 1) });
+  } else {
+    mode = 'week';
+    let d = new Date(r.start);
+    d = addDays(d, -((d.getDay() + 6) % 7));
+    for (; d < r.end; d = addDays(d, 7)) out.push({ start: d, end: addDays(d, 7) });
+  }
+  for (const b of out) { b.s = 0; b.e = 0; b.n = 0; }
+  let bi = 0;
+  const sorted = list.filter((o) => o.live).sort((a, b) => a.ms - b.ms);
+  for (const o of sorted) {
+    while (bi < out.length && o.ms >= out[bi].end.getTime()) bi++;
+    if (bi >= out.length) break;
+    if (o.ms < out[bi].start.getTime()) continue;
+    out[bi][o.ch] += o.net; out[bi].n++;
+  }
+  return { mode, out };
+}
+
+function bucketLabel(b, mode, long) {
+  if (mode === 'hour') return b.start.toLocaleTimeString(undefined, { hour: 'numeric' });
+  if (mode === 'week') return (long ? 'Week of ' : '') + b.start.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+  return b.start.toLocaleDateString(undefined, long ? { weekday: 'short', month: 'short', day: 'numeric' } : { month: 'short', day: 'numeric' });
+}
+
+function drawSales(list, r) {
+  const el = $('#saleschart');
+  if (!el) return;
+  const { mode, out } = buckets(list, r);
+  $('#bucketlabel').textContent = { hour: 'by hour', day: 'by day', week: 'by week' }[mode];
+  const showS = STATE.channel !== 'e', showE = STATE.channel !== 's';
+  const W = Math.max(280, el.clientWidth), H = 260;
+  const m = { l: 56, r: 6, t: 10, b: 24 };
+  const pw = W - m.l - m.r, ph = H - m.t - m.b;
+  const totals = out.map((b) => (showS ? b.s : 0) + (showE ? b.e : 0));
+  const max = niceMax(Math.max(...totals, 0) * 1.05);
+  const y = (v) => m.t + ph - (v / max) * ph;
+  const band = pw / out.length;
+  const bw = Math.max(2, Math.min(24, band * 0.72));
+  let g = '';
+  for (let i = 0; i <= 4; i++) {
+    const v = (max / 4) * i, yy = y(v);
+    g += `<line x1="${m.l}" x2="${W - m.r}" y1="${yy}" y2="${yy}" stroke="${i === 0 ? 'var(--axis)' : 'var(--grid)'}" stroke-width="1" shape-rendering="crispEdges"/>`;
+    g += `<text class="axis-text" x="${m.l - 8}" y="${yy + 4}" text-anchor="end">${esc(shortMoney(v))}</text>`;
+  }
+  const labelEvery = Math.max(1, Math.ceil(out.length / Math.max(2, Math.floor(pw / 70))));
+  let bars = '', labels = '', hits = '';
+  out.forEach((b, i) => {
+    const cx = m.l + band * i + band / 2;
+    const x = cx - bw / 2;
+    const vS = showS ? b.s : 0, vE = showE ? b.e : 0;
+    const hS = (vS / max) * ph, hE = (vE / max) * ph;
+    const base = m.t + ph;
+    if (vS > 0) bars += vE > 0
+      ? `<rect x="${x}" y="${base - hS}" width="${bw}" height="${hS}" fill="var(--shopify)"/>`
+      : `<path d="${roundTop(x, base - hS, bw, hS, 4)}" fill="var(--shopify)"/>`;
+    if (vE > 0) {
+      const gap = vS > 0 ? 2 : 0;
+      const h = Math.max(0, hE - gap);
+      bars += `<path d="${roundTop(x, base - hS - hE, bw, h, 4)}" fill="var(--ebay)"/>`;
+    }
+    if (i % labelEvery === 0) labels += `<text class="axis-text" x="${cx}" y="${H - 6}" text-anchor="middle">${esc(bucketLabel(b, mode))}</text>`;
+    hits += `<rect class="hit" data-i="${i}" x="${m.l + band * i}" y="${m.t}" width="${band}" height="${ph}" fill="transparent"/>`;
+  });
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" height="${H}" role="img" aria-label="Sales over time, stacked by store">${g}<g id="hover"></g>${bars}${labels}${hits}</svg>`;
+  const hover = $('#hover', el);
+  el.querySelectorAll('.hit').forEach((h) => {
+    h.addEventListener('pointermove', (ev) => {
+      const b = out[+h.dataset.i];
+      const x = m.l + band * +h.dataset.i;
+      hover.innerHTML = `<rect x="${x}" y="${m.t}" width="${band}" height="${ph}" fill="var(--wash)"/>`;
+      const lines = [];
+      lines.push(`<div class="line"><b>${money((showS ? b.s : 0) + (showE ? b.e : 0), { whole: true })}</b><span class="key">${int(b.n)} orders</span></div>`);
+      if (showS) lines.push(`<div class="line"><span class="key"><i style="background:var(--shopify)"></i>Shopify</span><b>${money(b.s, { whole: true })}</b></div>`);
+      if (showE) lines.push(`<div class="line"><span class="key"><i style="background:var(--ebay)"></i>eBay</span><b>${money(b.e, { whole: true })}</b></div>`);
+      showTip(ev, `<div class="t">${esc(bucketLabel(b, mode, true))}</div>${lines.join('')}`);
+    });
+    h.addEventListener('pointerleave', () => { hover.innerHTML = ''; hideTip(); });
+  });
+  $('#salestable').innerHTML = `<table><thead><tr><th>${mode === 'week' ? 'Week' : mode === 'hour' ? 'Hour' : 'Day'}</th><th class="r">Shopify</th><th class="r">eBay</th><th class="r">Total</th><th class="r">Orders</th></tr></thead><tbody>${
+    out.slice().reverse().map((b) => `<tr><td>${esc(bucketLabel(b, mode, true))}</td><td class="r">${money(b.s, { whole: true })}</td><td class="r">${money(b.e, { whole: true })}</td><td class="r">${money(b.s + b.e, { whole: true })}</td><td class="r">${int(b.n)}</td></tr>`).join('')
+  }</tbody></table>`;
+}
+
+function drawHeatmap(list) {
+  const el = $('#heatmap');
+  if (!el) return;
+  const grid = Array.from({ length: 7 }, () => new Array(24).fill(0));
+  for (const o of list) if (o.live) grid[(o.d.getDay() + 6) % 7][o.d.getHours()]++;
+  const flat = grid.flat();
+  const max = Math.max(...flat);
+  const W = Math.max(280, el.clientWidth);
+  const m = { l: 34, t: 4, b: 18 };
+  const cw = (W - m.l) / 24;
+  const ch = Math.min(26, Math.max(14, cw * 0.9));
+  const H = m.t + ch * 7 + m.b;
+  const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+  const step = (v) => (v === 0 ? 'var(--heat-0)' : `var(--seq-${Math.min(5, 1 + Math.floor((v / (max || 1)) * 4.999))})`);
+  let cells = '';
+  grid.forEach((row, d) => {
+    cells += `<text class="axis-text" x="${m.l - 6}" y="${m.t + ch * d + ch / 2 + 4}" text-anchor="end">${days[d]}</text>`;
+    row.forEach((v, h) => {
+      cells += `<rect class="cell" data-d="${d}" data-h="${h}" x="${m.l + cw * h + 1}" y="${m.t + ch * d + 1}" width="${Math.max(1, cw - 2)}" height="${ch - 2}" rx="2" fill="${step(v)}"/>`;
+    });
+  });
+  const hourLabel = (h) => new Date(2020, 0, 1, h).toLocaleTimeString(undefined, { hour: 'numeric' });
+  for (let h = 0; h < 24; h += 3) cells += `<text class="axis-text" x="${m.l + cw * h + cw / 2}" y="${H - 4}" text-anchor="middle">${esc(hourLabel(h))}</text>`;
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" height="${H}" role="img" aria-label="Orders by weekday and hour">${cells}</svg>
+    <div class="legend" style="margin-top:6px;align-items:center"><span>Fewer</span>${[0, 1, 2, 3, 4, 5].map((i) => `<i style="background:${i ? `var(--seq-${i})` : 'var(--heat-0)'};width:14px;height:10px;border-radius:2px"></i>`).join('')}<span>More orders</span><span style="margin-left:auto">Busiest: ${busiest(grid, days, hourLabel)}</span></div>`;
+  el.querySelectorAll('.cell').forEach((c) => {
+    c.addEventListener('pointermove', (ev) => {
+      const d = +c.dataset.d, h = +c.dataset.h;
+      showTip(ev, `<div class="t">${days[d]}, ${esc(hourLabel(h))}–${esc(hourLabel((h + 1) % 24))}</div><div class="line"><b>${int(grid[d][h])}</b><span class="key">orders</span></div>`);
+    });
+    c.addEventListener('pointerleave', hideTip);
+  });
+}
+function busiest(grid, days, hourLabel) {
+  let best = [0, 0, -1];
+  grid.forEach((row, d) => row.forEach((v, h) => { if (v > best[2]) best = [d, h, v]; }));
+  return best[2] > 0 ? `${days[best[0]]} ${esc(hourLabel(best[1]))}` : '–';
+}
+
+let resizeTimer;
+new ResizeObserver(() => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    if (!STATE.data || !$('#saleschart')) return;
+    const r = range(STATE.period);
+    const cur = slice(r.start.getTime(), r.end.getTime());
+    drawSales(cur, r);
+    drawHeatmap(cur);
+  }, 120);
+}).observe(document.documentElement);
+
+// ------------------------------------------------------------ sample data
+function makeDemo() {
+  let seed = 20261009;
+  const rnd = () => { seed |= 0; seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  const pick = (arr, w) => { let r = rnd() * w.reduce((a, b) => a + b, 0); for (let i = 0; i < arr.length; i++) { r -= w[i]; if (r <= 0) return arr[i]; } return arr[arr.length - 1]; };
+  const products = [
+    ['Vintage Brass Desk Lamp', 64, 22, 0.5], ['Hand-thrown Stoneware Mug', 28, 8, 0.4], ['Mid-century Teak Side Table', 189, 70, 0.6],
+    ['Wool Throw Blanket – Ochre', 72, 25, 0.3], ['Enamel Camp Kettle', 39, 13, 0.5], ['Linen Napkins (Set of 4)', 32, 9, 0.2],
+    ['Retro Bakelite Radio', 145, 40, 0.8], ['Cast Iron Skillet 10"', 48, 17, 0.4], ['Rattan Wall Mirror', 96, 34, 0.5],
+    ['Ceramic Bud Vase', 22, 6, 0.3], ['Leather Card Wallet', 35, 10, 0.4], ['Pressed Glass Tumblers (Pair)', 26, 7, 0.6],
+    ['Walnut Serving Board', 58, 19, 0.3], ['Antique Map Print – Cornwall', 44, 6, 0.7],
+  ];
+  const weights = [9, 14, 3, 6, 8, 7, 3, 7, 4, 10, 9, 5, 6, 4];
+  const countries = ['US', 'GB', 'CA', 'AU', 'DE', 'FR', 'IE', 'NL'];
+  const cw = [55, 16, 9, 7, 5, 3, 3, 2];
+  const hourW = [1, 0.5, 0.3, 0.2, 0.2, 0.4, 1, 2, 3, 4, 5, 5.5, 6, 6, 5.5, 5, 5, 5.5, 6.5, 8, 8.5, 7, 4.5, 2.5];
+  const hours = [...Array(24).keys()];
+  const orders = [];
+  const now = Date.now();
+  const DAYS = 400;
+  let sn = 4120, en = 0;
+  for (let d = DAYS; d >= 0; d--) {
+    const day = startOfDay(new Date(now - d * DAY));
+    const dow = day.getDay();
+    const growth = 0.7 + 0.3 * (1 - d / DAYS);
+    const season = 1 + 0.35 * Math.max(0, Math.cos(((day.getMonth() - 11) / 12) * 2 * Math.PI));
+    const weekend = dow === 0 ? 1.25 : dow === 6 ? 1.1 : 1;
+    for (const ch of ['s', 'e']) {
+      const base = (ch === 's' ? 5.2 : 3.6) * growth * season * weekend;
+      const n = Math.max(0, Math.round(base + (rnd() - 0.5) * base * 0.9));
+      for (let k = 0; k < n; k++) {
+        const t = new Date(day);
+        t.setHours(pick(hours, hourW), Math.floor(rnd() * 60));
+        if (t.getTime() > now) continue;
+        const lines = rnd() < 0.78 ? 1 : rnd() < 0.8 ? 2 : 3;
+        const items = [];
+        for (let l = 0; l < lines; l++) {
+          const p = pick(products, weights);
+          const qty = rnd() < 0.85 ? 1 : 2;
+          const price = ch === 'e' ? p[1] * (0.9 + rnd() * 0.15) : p[1];
+          items.push({ title: p[0], sku: 'SKU-' + products.indexOf(p), qty, amt: Math.round(price * qty * 100) / 100, cost: p[2] * qty });
+        }
+        const sub = items.reduce((a, i) => a + i.amt, 0);
+        const ship = sub > 75 && ch === 's' ? 0 : Math.round((4.5 + rnd() * 6) * 100) / 100;
+        const sales = Math.round((sub + ship) * 100) / 100;
+        const age = now - t.getTime();
+        const roll = rnd();
+        const status = roll < 0.012 ? 'cancelled' : roll < 0.035 ? 'refunded' : roll < 0.045 ? 'part_refunded' : 'paid';
+        const refund = status === 'refunded' ? sales : status === 'part_refunded' ? Math.round(sales * 0.3 * 100) / 100 : 0;
+        const ful = age < 1.2 * DAY ? (rnd() < 0.85 ? 'unfulfilled' : 'fulfilled') : age < 3.5 * DAY ? (rnd() < 0.12 ? 'unfulfilled' : 'fulfilled') : 'fulfilled';
+        orders.push({
+          ch, id: ch === 's' ? '#' + (++sn) : `${String(10 + (en % 89)).padStart(2, '0')}-${String(11000 + (++en * 37) % 89999).padStart(5, '0')}-${String(10000 + (en * 7919) % 89999).padStart(5, '0')}`,
+          t: t.toISOString(), sales, tax: Math.round(sales * 0.07 * 100) / 100, ship, disc: 0, refund,
+          fee: ch === 'e' ? Math.round((sales * 0.1325 + 0.3) * 100) / 100 : 0,
+          status, ful, country: pick(countries, cw), src: ch === 'e' ? 'ebay' : 'web', items,
+        });
+      }
+    }
+  }
+  orders.sort((a, b) => (a.t < b.t ? 1 : -1));
+  return {
+    generatedAt: new Date(now - 14 * 60000).toISOString(),
+    since: new Date(now - DAYS * DAY).toISOString(),
+    currency: 'USD',
+    sources: {
+      shopify: { ok: true, name: 'Sample Goods Co. (example)', orders: orders.filter((o) => o.ch === 's').length },
+      ebay: { ok: true, orders: orders.filter((o) => o.ch === 'e').length },
+    },
+    orders,
+    shopify: { lowStock: [{ title: 'Retro Bakelite Radio', qty: 0 }, { title: 'Mid-century Teak Side Table', qty: 1 }, { title: 'Rattan Wall Mirror', qty: 2 }, { title: 'Wool Throw Blanket – Ochre', qty: 4 }, { title: 'Enamel Camp Kettle', qty: 5 }] },
+    ebay: {
+      funds: { available: 1284.5, processing: 412.2, onHold: 0, total: 1696.7 },
+      listings: { active: 318, lowQty: new Array(41).fill({}), mostWatched: [{ title: 'Retro Bakelite Radio – Working, 1950s', watchers: 23 }, { title: 'Antique Map Print – Cornwall 1876', watchers: 17 }, { title: 'Mid-century Teak Side Table', watchers: 12 }] },
+    },
+  };
+}
+
+boot();
+</script>
