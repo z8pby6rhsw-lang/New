@@ -1,0 +1,66 @@
+# Refreshes the dashboard every hour: pulls Shopify + eBay sales,
+# encrypts them and publishes the dashboard to GitHub Pages.
+name: Sync sales
+
+on:
+  schedule:
+    - cron: "17 * * * *" # every hour, at 17 minutes past
+  workflow_dispatch: # lets you press "Run workflow" to refresh right now
+  push:
+    branches: [main]
+    paths: ["dashboard/**", "scripts/**", ".github/workflows/sync.yml"]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Fetch sales from Shopify and eBay
+        env:
+          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+          SHOPIFY_STORE: ${{ secrets.SHOPIFY_STORE }}
+          SHOPIFY_CLIENT_ID: ${{ secrets.SHOPIFY_CLIENT_ID }}
+          SHOPIFY_CLIENT_SECRET: ${{ secrets.SHOPIFY_CLIENT_SECRET }}
+          SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
+          EBAY_CLIENT_ID: ${{ secrets.EBAY_CLIENT_ID }}
+          EBAY_CLIENT_SECRET: ${{ secrets.EBAY_CLIENT_SECRET }}
+          EBAY_REFRESH_TOKEN: ${{ secrets.EBAY_REFRESH_TOKEN }}
+          DAYS_BACK: ${{ vars.DAYS_BACK }}
+          EBAY_SITE_ID: ${{ vars.EBAY_SITE_ID }}
+          OUT_FILE: site/data.enc.json
+        run: node scripts/sync.mjs
+      - name: Add the dashboard page
+        run: |
+          mkdir -p site
+          {
+            echo '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head><body>'
+            cat dashboard/index.html
+            echo '</body></html>'
+          } > site/index.html
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  publish:
+    needs: sync
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
